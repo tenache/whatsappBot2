@@ -1,0 +1,41 @@
+CREATE TABLE Users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(255) NOT NULL,
+    edad INT,
+    profesion VARCHAR(255)
+);
+
+CREATE TABLE Hobbies (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    hobby VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Amigos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE Gustos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    gusto VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE LibrosFavoritos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(255) NOT NULL,
+    autor VARCHAR(255)
+);
+
+CREATE TABLE PeliculasFavoritas (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    titulo VARCHAR(255) NOT NULL,
+    director VARCHAR(255)
+);
+
+CREATE TABLE Horarios (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    dia VARCHAR(255) NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    actividad VARCHAR(255)
+);

@@ -1,0 +1,12 @@
+.wwebjs_auth/
+.wwebjs_cache/
+
+*.gguf
+
+.vscode
+__pycache__
+.pyc
+package.json
+package-lock.json
+node_modules/
+
