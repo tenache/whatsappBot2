@@ -1,4 +1,5 @@
 // TODO: Hacer que no lea el u
+const waitTime = 500
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const client = new Client({
@@ -142,19 +143,19 @@ async function handleInsertions(message)  {
     else
     {
         var [chat_ready, chat] = await getChatAsync(message);
-        if (message.from === '5493874034462@c.us' || message.from === '5493874149123@c.us' || message.from === '5493874690429@c.us' || chat_ready === true & message.type == "TEXT") {
+        if (message.from === '5493874750755.us'|| message.from === '5493874034462@c.us' || message.from === '5493874149123@c.us' || message.from === '5493874690429@c.us' || chat_ready === true & message.type == "TEXT") {
             try {
                 await insert_user(message);
                 await insert_message(message);
                 message_list.push(message)
                 console.log("waiting for follow-ups (45s)");
-                await sleep(15_000); // wait for possible incoming new messages before responding
+                await sleep(waitTime*3); // wait for possible incoming new messages before responding
                 console.log("waiting for follow-ups (30s)");
-                await sleep(10_000);
+                await sleep(waitTime*2);
                 console.log("waiting for follow-ups (20s)");
-                await sleep(10_000);
+                await sleep(waitTime*2);
                 console.log("waiting for follow-ups (10s)")
-                await sleep (10_000)
+                await sleep (waitTime*2)
                 
                 return chat
                 // respond(message, chat);

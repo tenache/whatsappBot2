@@ -5,6 +5,18 @@ import sqlite3
 from datetime import timedelta
 import json
 import random as rr
+from datetime import datetime
+
+def check_extra_ai_message(all_ai_messages, all_ai_times, all_user_times, database_path):
+
+    if all_ai_times:
+        if datetime.strptime((all_ai_times[0][-1]),"%Y-%m-%d %H:%M:%S") - datetime.strptime((all_user_times[0][-1]),"%Y-%m-%d %H:%M:%S") > timedelta(days=0):
+            last_ai_message = all_ai_messages.pop(0)
+            last_ai_time = all_ai_times.pop(0)
+            with sqlite3.connect(database_path) as conn:
+                c = conn.cursor()
+                c.execute("DELETE FROM messages WHERE content = ? AND created_at = ?",(last_ai_message[5],last_ai_time[0]))
+    return  all_ai_messages, all_ai_times, all_user_times, database_path
 
 
 # PROBABLY WILL NEED TO DEBUG THIS AT SOME POINT. LEAVING SOME DEBUGGING POINTS JUST IN CASE
@@ -41,6 +53,7 @@ def extract_json_from_string(new_string, model, messages_json):
                 temperature=0,
                 max_tokens=5000
             )['choices'][0]['message']['content'].strip()
+            print(f"new string after AI is {new_string}")
             extract_json_from_string_simple(new_string)
             json_dict = {}
     return json_dict
@@ -112,10 +125,20 @@ def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
             return messages
     return messages
         
-def get_info_for_ai(info_data_path, table):
+def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variables=None):
+    if not columns:
+        columns = '*'
     with sqlite3.connect(info_data_path) as conn:
         c = conn.cursor()
-        c.execute(f'''SELECT * FROM {table}''')
+        query = f'''SELECT {columns} FROM {table}'''
+        if conditions:
+            query += f"WHERE {conditions[0]}"
+            for condition in conditions[1:]:
+                query += f" and {condition}"
+        if variables:
+            c.execute(query, variables)
+        else:
+            c.execute(query)
         all_info = c.fetchall()
     column_names = [description[0] for description in c.description]
     info = all_info[0]
