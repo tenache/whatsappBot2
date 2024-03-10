@@ -1,4 +1,8 @@
 // TODO: Hacer que no lea el u
+const TELEFONO = '4212368'
+const CELULAR = '387528693'
+const WHATSAPP = 'https://wa.me/5493875286093'
+
 const waitTime = 500
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
@@ -119,7 +123,7 @@ function respond(message, chat) {
                         }
                         else {
                         console.log(row.content);
-                        chat.sendMessage("No podemos atenderle en este momento. Por favor espere");
+                        chat.sendMessage(`No podemos atenderle en este momento. Puede comunicarse con los numeros $(TELEFONO)!, $(CELULAR)!, $(WHATSAPP)!`);
                         }
                     }
                     else {

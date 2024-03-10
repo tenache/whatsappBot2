@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import yaml
 from auxiliary_funcs import get_info_for_ai, extract_json_from_string, extract_from_database, \
-  transform_to_datetime, complete_messages, group_user_messages, insert_into_database,check_extra_ai_message
+  transform_to_datetime, complete_messages, group_user_messages, insert_into_database,check_extra_ai_message, check_chat_completion
 
 response_path = os.path.join("\\","Users", "tenache89", "Desktop","llama.cpp","scripts_tenache")
 
@@ -48,7 +48,7 @@ model = llama_cpp.Llama(
     model_path=model_path,
     chat_format="llama-2",
     verbose=False,
-    n_ctx=1024
+    n_ctx=2000
 )
 
 posta1 = datetime.now()
@@ -174,9 +174,9 @@ print(f"It took about {posta2 - posta1} to complete the first response")
 #     "content":f"{chat_completion0}"
 #   }
 # ]
-
+correct_keys = {"es_duda?","puedo_ayudar", "informacion_requerida"}
 messages_json = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_json'])
-answer_dict = extract_json_from_string(chat_completion0, model, messages_json)
+answer_dict = extract_json_from_string(chat_completion0, model, messages_json, correct_keys)
 
 print(f"This JSON will be passed on to the next AI: {answer_dict}")
 
@@ -242,8 +242,9 @@ elif table:
         messages_more_info = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_more_info'])
         chat_completion = model.create_chat_completion(
         messages = messages_more_info,
-        temperature=0.25,
-        max_tokens=5000)['choices'][0]['message']['content'].strip() 
+        temperature=0,
+        max_tokens=5000)
+        chat_completion = chat_completion['choices'][0]['message']['content'].strip() 
     else:
         chat_completion = f"Hubo algun problema. Por favor, comunicate con un humano al\n numero de telefono:\
                 {TELEFONO}\n whatsapp:{WHATSAPP}\n, o celular {CELULAR}"       
@@ -254,7 +255,8 @@ elif not answer_dict.get('es_duda?', False):
     messages = messages_more_info,
     temperature=0.25,
     max_tokens=5000
-  )['choices'][0]['message']['content'].strip()
+  )
+    chat_completion = chat_completion['choices'][0]['message']['content'].strip()
   
 else:
   messages_no_info = complete_messages(all_user_messages_grouped, all_ai_messages, config_messages['messages_no_info'])
@@ -262,9 +264,12 @@ else:
     messages = messages_no_info,
     temperature=0.25,
     max_tokens=5000
-  )['choices'][0]['message']['content'].strip()
+  )
+  chat_completion = chat_completion['choices'][0]['message']['content'].strip()
 
 message_id = message_info[0] + "_ai"
+
+chat_completion = check_chat_completion(chat_completion)
 
 print(f"The AI responded: \n{chat_completion}")
 # print(f"response is {response}")

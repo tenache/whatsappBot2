@@ -5,7 +5,7 @@ messages0:
       Interactuaras con un cliente que recibirá un servicio de de control de plagas. 
       Dispones de las siguientes categorias de información:
       * Servicios_programados:Tienes informacion sobre el domicilio y el horario del servicio. 
-      * Horario_pub :Horarios de atención al público.
+      * Horarios_pub :Horarios de atención al público.
       * Contactos: telefonos de contacto.
         
       Tu tarea es  determinar si puedes ayudarlos o no a partir de la informacion que tienes. 
@@ -57,7 +57,7 @@ messages_more_info:
       Todavía no sabes cual es la pregunta del usuario, y tu tarea es determinarla. 
       Esta es la informacion que hay disponible: 
       * Servicios_programados:Tienes informacion sobre el domicilio y el horario del servicio. 
-      * Horario_pub :Horarios de atención al público.
+      * Horarios_pub :Horarios de atención al público.
       * Contactos: telefonos de contacto.
 
       Haz mas preguntas para determinar si puedes ayudar con la informacion que tienes.

@@ -7,6 +7,37 @@ import json
 import random as rr
 from datetime import datetime
 
+def check_chat_completion(chat_completion):
+    index_inst = -1
+    index_inst = chat_completion.find("[/INST]")
+    if index_inst != -1:
+        chat_completion = chat_completion[index_inst+7:]
+        index_inst = chat_completion.find("[/INST]")
+    if index_inst != -1:
+        chat_completion = chat_completion[:index_inst]
+    return chat_completion
+
+
+def check_correct_dict(answer_dict, correct_keys):
+    new_dict = answer_dict.copy()
+    for key in answer_dict:
+        if type(answer_dict[key]) == str:
+            comma_index = -1
+            comma_index  = answer_dict[key].find(",")
+            while comma_index != -1:
+                new_dict[key] = new_dict[key][comma_index+1:]
+                comma_index = new_dict[key].find(",")
+            new_dict[key] = new_dict[key].strip()
+        if key not in correct_keys:
+            del new_dict[key]
+        
+    for c_key in correct_keys:
+        if c_key not in new_dict:
+            answer_dict[key] = None
+    return new_dict
+
+
+
 def check_extra_ai_message(all_ai_messages, all_ai_times, all_user_times, database_path):
 
     if all_ai_times:
@@ -38,13 +69,15 @@ def extract_json_from_string_simple(s):
     return new_string 
 
 
-def extract_json_from_string(new_string, model, messages_json):
+def extract_json_from_string(new_string, model, messages_json, correct_keys):
     new_string = extract_json_from_string_simple(new_string)
     for _ in range(2):
         try:
             json_dict = json.loads(new_string)
+            json_dict = check_correct_dict(json_dict, correct_keys)
+
             return json_dict
-        except Exception as err:
+        except json.JSONDecodeError as err:
             print(f"Error loading json from response string: \n{err}")
             print(f"The string is now is {new_string}")
             print(f"trying to extract from json")
@@ -136,9 +169,19 @@ def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variab
             for condition in conditions[1:]:
                 query += f" and {condition}"
         if variables:
-            c.execute(query, variables)
+            try:
+                c.execute(query, variables)
+            except sqlite3.OperationalError as err:
+                print(err)
+                print("Most likely error was a mistake in table name from ai")
+                return None, None
         else:
-            c.execute(query)
+            try:
+                c.execute(query)
+            except sqlite3.OperationalError as err:
+                print(err)
+                print("Most likely error was a mistake in table name from ai")
+                return None, None
         all_info = c.fetchall()
     column_names = [description[0] for description in c.description]
     info = all_info[0]
