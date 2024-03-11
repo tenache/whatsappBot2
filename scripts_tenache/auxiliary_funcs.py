@@ -33,7 +33,7 @@ def check_correct_dict(answer_dict, correct_keys):
         
     for c_key in correct_keys:
         if c_key not in new_dict:
-            answer_dict[key] = None
+            new_dict[c_key] = None
     return new_dict
 
 
@@ -53,6 +53,8 @@ def check_extra_ai_message(all_ai_messages, all_ai_times, all_user_times, databa
 # PROBABLY WILL NEED TO DEBUG THIS AT SOME POINT. LEAVING SOME DEBUGGING POINTS JUST IN CASE
 def extract_json_from_string_simple(s):
     new_string = s.replace("False","false")
+    new_string = new_string.replace("«", "\"")
+    new_string = new_string.replace("»", "\"")
     new_string = new_string.replace("True","true")
     new_string = new_string.replace("None","null")
     start = s.find('{')  # Find the first occurrence of '{'
@@ -65,11 +67,14 @@ def extract_json_from_string_simple(s):
         if start != -1 and end != -1:
           new_string = new_string[start:end+1]
           new_string = new_string.replace("[","{")
-          new_string = new_string.replace("]","}")  
+          new_string = new_string.replace("]","}")
+        else:
+            new_string = "{" + new_string + "}"  
     return new_string 
 
 
 def extract_json_from_string(new_string, model, messages_json, correct_keys):
+    new_string =  check_chat_completion(new_string)
     new_string = extract_json_from_string_simple(new_string)
     for _ in range(2):
         try:
@@ -84,7 +89,7 @@ def extract_json_from_string(new_string, model, messages_json, correct_keys):
             new_string = model.create_chat_completion(
                 messages = messages_json,
                 temperature=0,
-                max_tokens=5000
+                max_tokens=100
             )['choices'][0]['message']['content'].strip()
             print(f"new string after AI is {new_string}")
             extract_json_from_string_simple(new_string)
@@ -144,10 +149,6 @@ def group_user_messages(all_user_messages, all_ai_times, all_user_times):
     
 def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
     for i, message in enumerate(all_user_messages_grouped):
-        messages.append({
-            "role":"user",
-            "content":message
-        })
         try:
             messages.append({
                 "role":"assistant",
@@ -155,7 +156,12 @@ def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
             })
         except IndexError as err:
             print(f"Expected error in complete message: \n{err}")
-            return messages
+
+        messages.append({
+            "role":"user",
+            "content":message
+        })
+
     return messages
         
 def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variables=None):
@@ -165,7 +171,7 @@ def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variab
         c = conn.cursor()
         query = f'''SELECT {columns} FROM {table}'''
         if conditions:
-            query += f"WHERE {conditions[0]}"
+            query += f" WHERE {conditions[0]}"
             for condition in conditions[1:]:
                 query += f" and {condition}"
         if variables:

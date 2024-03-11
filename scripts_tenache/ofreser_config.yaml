@@ -11,8 +11,8 @@ messages0:
       Tu tarea es  determinar si puedes ayudarlos o no a partir de la informacion que tienes. 
       Debes determinar si puedes ayudar con la pregunta, cual de las categorias responderia la pregunta, y si se requieren preguntas adicionales
       Debes responder en format json, con las claves:
-      es_duda?: donde el valor sera un booleano (true o false). Esto sera verdadero si el usuario no hizo una pregunta concreta. 
-      puedo_ayudar: donde el valor sera un booleano: true o false. Si el valor de es_duda?? es false, puedo_ayudar tambien debe
+      es_duda?: donde el valor sera un booleano (true o false). Esto sera verdadero si el usuario hizo una pregunta concreta. 
+      puedo_ayudar: donde el valor sera un booleano: true o false. Determina si piensas que puedes ayudar con la informacion que tienes.  
       informacion_requerida: Responde con UNA SOLA categoria de informacion que piensas que ayudara a responder la duda del cliente 
       entre las mencionadas anteriormente. 
       Responde solo el objeto JSON, en el siguiente formato. 

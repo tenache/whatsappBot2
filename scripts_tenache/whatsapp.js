@@ -1,4 +1,8 @@
 // TODO: Hacer que no lea el u
+const Lau = '5493424076693.us'
+const Foca = '5493874034462@c.us'
+const Sabri = '5493874690429@c.us'
+const Cris = '5493874750755.us'
 const TELEFONO = '4212368'
 const CELULAR = '387528693'
 const WHATSAPP = 'https://wa.me/5493875286093'
@@ -123,7 +127,7 @@ function respond(message, chat) {
                         }
                         else {
                         console.log(row.content);
-                        chat.sendMessage(`No podemos atenderle en este momento. Puede comunicarse con los numeros $(TELEFONO)!, $(CELULAR)!, $(WHATSAPP)!`);
+                        chat.sendMessage(`No podemos atenderle en este momento. Puede comunicarse con los numeros ${TELEFONO}, ${CELULAR}, ${WHATSAPP}`);
                         }
                     }
                     else {
@@ -147,7 +151,7 @@ async function handleInsertions(message)  {
     else
     {
         var [chat_ready, chat] = await getChatAsync(message);
-        if (message.from === '5493874750755.us'|| message.from === '5493874034462@c.us' || message.from === '5493874149123@c.us' || message.from === '5493874690429@c.us' || chat_ready === true & message.type == "TEXT") {
+        if (message.from === Lau || message.from === Cris || message.from === Foca || message.from === '5493874149123@c.us' || message.from === Sabri || chat_ready === true & message.type == "TEXT") {
             try {
                 await insert_user(message);
                 await insert_message(message);
