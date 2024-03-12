@@ -12,7 +12,7 @@ messages0:
       Debes determinar si puedes ayudar con la pregunta, cual de las categorias responderia la pregunta, y si se requieren preguntas adicionales
       Debes responder en format json, con las claves:
       es_duda?: donde el valor sera un booleano (true o false). Esto sera verdadero si el usuario hizo una pregunta concreta. 
-      puedo_ayudar: donde el valor sera un booleano: true o false. Determina si piensas que puedes ayudar con la informacion que tienes.  
+      puedo_ayudar: donde el valor sera un booleano: true o false. Determina si piensas que puedes ayudar con la informacion que tienes o si es un saludo. 
       informacion_requerida: Responde con UNA SOLA categoria de informacion que piensas que ayudara a responder la duda del cliente 
       entre las mencionadas anteriormente. 
       Responde solo el objeto JSON, en el siguiente formato. 

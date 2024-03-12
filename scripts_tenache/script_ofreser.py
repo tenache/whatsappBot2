@@ -98,7 +98,7 @@ posta3 = datetime.now()
 
 print(f"The second completion is underway")
 
-if not answer_dict["puedo_ayudar"]:
+if not answer_dict.get("puedo_ayudar", False):
     messages_no_info = complete_messages(all_user_messages_grouped, all_ai_messages, config_messages['messages_no_info'])
     messages_no_info[0]['content'] = messages_no_info[0]['content'].format(TELEFONO=TELEFONO, CELULAR=CELULAR,WHATSAPP=WHATSAPP)
     chat_completion = model.create_chat_completion(
@@ -151,6 +151,7 @@ elif not answer_dict.get('es_duda?', False):
   
 else:
   messages_no_info = complete_messages(all_user_messages_grouped, all_ai_messages, config_messages['messages_no_info'])
+
   chat_completion = model.create_chat_completion(
     messages = messages_no_info,
     temperature=0.25,

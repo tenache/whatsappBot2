@@ -1,13 +1,17 @@
 // TODO: Hacer que no lea el u
-const Lau = '5493424076693.us'
-const Foca = '5493874034462@c.us'
-const Sabri = '5493874690429@c.us'
-const Cris = '5493874750755.us'
-const TELEFONO = '4212368'
-const CELULAR = '387528693'
-const WHATSAPP = 'https://wa.me/5493875286093'
+const Lau = '5493424076693@c.us';
+const Foca = '5493874034462@c.us';
+const Sabri = '5493874690429@c.us';
+const Cris = '5493874750755@c.us';
+const juegosSalta = '5493875699648@c.us';
+const Marco = '5493874149123@c.us';
+const Mary = '5493874737179@c.us'
 
-const waitTime = 500
+const TELEFONO = '4212368';
+const CELULAR = '387528693';
+const WHATSAPP = 'https://wa.me/5493875286093';
+
+const waitTime = 5_000;
 const qrcode = require('qrcode-terminal');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const client = new Client({
@@ -151,7 +155,7 @@ async function handleInsertions(message)  {
     else
     {
         var [chat_ready, chat] = await getChatAsync(message);
-        if (message.from === Lau || message.from === Cris || message.from === Foca || message.from === '5493874149123@c.us' || message.from === Sabri || chat_ready === true & message.type == "TEXT") {
+        if (message.from === Mary, message.from === juegosSalta, message.from === Lau || message.from === Cris || message.from === Foca || message.from === Marco || message.from === Sabri || chat_ready === true & message.type == "TEXT") {
             try {
                 await insert_user(message);
                 await insert_message(message);

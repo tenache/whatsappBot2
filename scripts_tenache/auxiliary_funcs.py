@@ -148,7 +148,7 @@ def group_user_messages(all_user_messages, all_ai_times, all_user_times):
 
     
 def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
-    for i, message in enumerate(all_user_messages_grouped):
+    for i in range(len(all_user_messages_grouped)-1,-1,-1):
         try:
             messages.append({
                 "role":"assistant",
@@ -159,7 +159,7 @@ def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
 
         messages.append({
             "role":"user",
-            "content":message
+            "content":all_user_messages_grouped[i]
         })
 
     return messages
