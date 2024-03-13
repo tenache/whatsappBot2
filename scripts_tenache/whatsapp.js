@@ -89,7 +89,7 @@ function insert_user(message){
                 console.error("DB Error. Insert user failed: ", err.message);
                 return reject(err.message);
             }
-            return resolve("done")
+            return resolve("done");
         });
     });
 }
