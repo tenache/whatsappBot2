@@ -11,6 +11,11 @@ import yaml
 from auxiliary_funcs import get_info_for_ai, extract_json_from_string, extract_from_database, \
   transform_to_datetime, complete_messages, group_user_messages, insert_into_database,check_extra_ai_message, check_chat_completion
 
+
+# TODO: Limit number of messages/tokens so that AI doesn't get so confused. 
+# Have to change something about complete messages, maybe. 
+## Right now I can't really do it ... 
+
 response_path = os.path.join("\\","Users", "tenache89", "Desktop","llama.cpp","scripts_tenache")
 
 table = None
@@ -24,10 +29,10 @@ WHATSAPP = 'https://wa.me/5493875286093'
 WAIT_TIME = "-10 minutes"
 TABLE = "messages"
 
-
-# HERE AER SOME OF THE PATHS WE WILL BE USING
+# HERE ARE SOME OF THE PATHS WE WILL BE USING
 
 model_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache") 
+# model_name = "mistral-7b-instruct-v0.2.Q6_K.gguf"
 model_name = 'Turdus-trained-20-int8.gguf'
 model_path = os.path.join(model_folder, model_name)
 database_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache")
@@ -41,7 +46,6 @@ config_path = os.path.join(config_folder, config_name)
 
 with open(config_path) as conf:
     config_messages = yaml.safe_load(conf)
-
 
 start = datetime.now()
 model = llama_cpp.Llama(

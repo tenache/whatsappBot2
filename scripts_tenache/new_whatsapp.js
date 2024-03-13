@@ -6,6 +6,8 @@ const Cris = '5493874750755@c.us';
 const juegosSalta = '5493875699648@c.us';
 const Marco = '5493874149123@c.us';
 const Mary = '5493874737179@c.us';
+answer_phones = new Set([Lau, Foca, Sabri, Cris, juegosSalta, Marco, Mary])
+console.log(answer_phones.has('5493874149123@c.us'))
 
 const TELEFONO = '4212368';
 const CELULAR = '387528693';
@@ -97,6 +99,8 @@ function sleep(ms){
     return new Promise(resolve => setTimeout(resolve,ms))
 }
 
+const python_path = "C:\\thibbard\\envs\\prompt_engineering\\Scripts\\python.exe"
+// const python_path = "C:\\Users\\tenache89\\miniconda3\\python.exe"
 function respond(message, chat) {
     console.log("About to begin the python process");
     // After successful insertion, execute the Python script
@@ -146,13 +150,19 @@ function respond(message, chat) {
 
 const message_list = []
 async function handleInsertions(message)  {
+    console.log("just entered handleInsertions")
 	if (message.body === '!ping') {
 		await message.reply('pong');
 	}
     else
     {
         var [chat_ready, chat] = await getChatAsync(message);
-        if (message.from === Mary || message.from === juegosSalta || message.from === Lau || message.from === Cris || message.from === Foca || message.from === Marco || message.from === Sabri || chat_ready === true & message.type === "TEXT") {
+        console.log(answer_phones.has(message.from));
+        console.log(chat_ready)
+        console.log(message.type === "TEXT")
+
+        if ((answer_phones.has(message.from) || chat_ready) === true && message.type == "TEXT") {
+            console.log("hello")
             try {
                 await insert_user(message);
                 await insert_message(message);
@@ -174,116 +184,9 @@ async function handleInsertions(message)  {
         }
     }}
 client.on('message', async(message) =>{
-    console.log("received message")
     chat = await handleInsertions(message);
     if (message === message_list[message_list.length-1]) {
         respond(message, chat)
     }
 })
 
-// var all_chats = new Set()
-// async function handleAllInsertions(message){
-//     var_all_chats = new Set()
-//     var chat = await handleInsertions(message);
-//     all_chats.add(chat)
-//     return all_chats
-// }
-
-
-// client.on('message', async(message) =>{
-//     var all_chats = handleAllInsertions(message);
-
-//     for (let this_chat in all_chats){
-//         respond(message, this_chat);
-//         all_chats.delete(this_chat);
-//     }
-// })
-
-
-    // client.on('message', async (message) => {
-
-// 	if (message.body === '!ping') {
-// 		await message.reply('pong');
-// 	}
-//     else
-//     {
-//         var [chat_ready, chat] = await getChatAsync(message);
-//         if (message.from === '5493874034462@c.us' || message.from === '5493874690429@c.us' || chat_ready === true) {
-//             try {
-//                 await insert_user(message);
-//                 await insert_message(message);
-//                 console.log("waiting for follow-ups (30s)");
-//                 await sleep(10_000); // wait for possible incoming new messages before responding
-//                 console.log("waiting for follow-ups (20s)");
-//                 await sleep(10_000);
-//                 console.log("waiting for follow-ups (10s)");
-//                 await sleep(10_000);
-//                 respond(message, chat);
-//             } catch (error) {
-//                 console.error(error);
-//             }
-
-//         }
-//     }})
-
-
-
-// new Promise((resolve, reject) => {
-//     console.log(`message._data.notifyName is ${message._data.notifyName}`);
-//     console.log(`message.body is ${message.body}`);
-//     db.run(`INSERT INTO users (id, username) VALUES (?, ?) ON CONFLICT (id) DO NOTHING;`, [message.from, message._data.notifyName], function(err) {
-//         if (err){
-//             console.error(err.message);
-//             reject(err); // Reject the promise if there's an error
-//         } else {
-//             console.log(`A row has been inserted with rowid ${this.lastID}`);
-//             resolve(this.lastID); //Resolve the Promise with lastID
-//         }
-
-//     });
-//     db.run(`INSERT INTO messages (id, user_id, from_user, from_ai, content) VALUES (?, ?, ?, ?, ?)`, [message.id.id, message.from, 1, 0, message.body], function(err) {
-//         if (err) {
-//             console.error(err.message);
-//             reject(err); // Reject the Promise if there's an error
-//         } else {
-//             console.log(`A row has been inserted with rowid ${this.lastID}`);
-//             resolve(this.lastID); // Resolve the Promise with lastID
-//         }
-//     });
-// }).then((lastID) => {
-//     console.log("hello");
-//     // After successful insertion, execute the Python script
-//     const pythonProcess = spawn('python',['second_script.py', message.body.toString()]);
-//     pythonProcess.on('close', (code) => {
-//         console.log(`child process exited with code ${code}`);
-    
-//         // Read file only after Python script has finished
-
-//         try {
-//             const query = `SELECT content FROM messages  WHERE user_id ==? ORDER BY created_at DESC LIMIT 1`;
-
-//             db.serialize(() => {
-//                 db.get(query,
-//                 [message.from], 
-//                 (err, row) => {
-//                     if (err){
-//                         console.error(err.message);
-//                         return;
-//                     }
-//                     if (row){
-//                         console.log(row.content);
-//                         chat.sendMessage(row.content);
-//                     } else {
-//                         console.log("No content found");
-//                     }
-//                 });
-//             });
-
-//         } catch (readErr) {
-//             console.error(readErr);
-//         }
-//     });
-// }).catch((err) => {
-//     console.error("Database operation failed", err);
-// });
-// }

@@ -30,8 +30,8 @@ messages_json:
       {"es_duda??":false,"puedo_ayudar":true,"informacion_requerida":null}
       {"es_duda??":true,"puedo_ayudar":true,"informacion_requerida":Gustos}
       Recuerda hacerlo a partir de la informacion que te brinde el usuario
-  - role: "user"
-    content: {chat_completion}
+#  - role: "user"
+#    content: {chat_completion}
 
 
 messages_no_info:
