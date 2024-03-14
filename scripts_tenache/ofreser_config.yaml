@@ -61,7 +61,7 @@ messages_more_info:
       * Contactos: telefonos de contacto.
 
       Haz mas preguntas para determinar si puedes ayudar con la informacion que tienes.
-      Empieza con: 'Soy la IA de O.FRE.SER - Gestión Integral de Plagas'
+      Empieza con: 'Soy la IA de O.FRE.SER - Gestión Integral de Plagas'. Estoy aqui para entender tus necesidades
 
 messages_info:
 - role: "system"
@@ -75,7 +75,7 @@ messages_info:
       {columnas}
       {informacion}
       Contesta en menos de 50 palabras. 
-      Empieza con Soy la IA de O.FRE.SER - Gestión Integral de Plagas
+      Empieza con Soy la IA de O.FRE.SER - Gestión Integral de Plagas. Estoy aqui para responder tus preguntas
 
 
 

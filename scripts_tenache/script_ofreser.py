@@ -67,21 +67,30 @@ all_strings = ""
 for message in all_user_messages_grouped:
     all_strings += message
 for ai_message in all_ai_messages:
-    all_strings += ai_message
+    all_strings += ai_message[-1]
 
 all_strings += config_messages['messages0'][0]['content']
 
-
-######### EXHAUSTED CODING OVER
-
-
-# did something: moved the model till I got all the messages. 
 start = datetime.now()
-model = llama_cpp.Llama(
+
+first_model = llama_cpp.Llama(
     model_path=model_path,
     chat_format="llama-2",
     verbose=False,
     n_ctx=2000
+)
+
+tokens = first_model.tokenize(all_strings.encode('utf-8'))
+######### EXHAUSTED CODING OVER
+n_ctx = len(tokens) + 512
+print(f"first model and tokenization took {datetime.now() - start}")
+# did something: moved the model till I got all the messages. 
+
+model = llama_cpp.Llama(
+    model_path=model_path,
+    chat_format="llama-2",
+    verbose=False,
+    n_ctx=n_ctx
 )
 
 posta1 = datetime.now()

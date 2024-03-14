@@ -7,10 +7,13 @@ from datetime import datetime
 
 def check_chat_completion(chat_completion):
     index_inst = -1
-    index_inst = chat_completion.find("[/INST]")
+    index_inst = chat_completion.find("INST")
     if index_inst != -1:
         chat_completion = chat_completion[index_inst+7:]
-        index_inst = chat_completion.find("[/INST]")
+        index_inst = chat_completion.find("INST")
+    if index_inst != -1:
+        chat_completion = chat_completion[:index_inst]
+    index_inst = chat_completion.find("\n")
     if index_inst != -1:
         chat_completion = chat_completion[:index_inst]
     return chat_completion
