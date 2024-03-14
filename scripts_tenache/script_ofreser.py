@@ -47,16 +47,7 @@ config_path = os.path.join(config_folder, config_name)
 with open(config_path) as conf:
     config_messages = yaml.safe_load(conf)
 
-start = datetime.now()
-model = llama_cpp.Llama(
-    model_path=model_path,
-    chat_format="llama-2",
-    verbose=False,
-    n_ctx=2000
-)
 
-posta1 = datetime.now()
-print(f"it took {posta1-start} to fire up the model")
 
 all_user_messages, all_ai_messages, all_user_times, all_ai_times, message_info = extract_from_database(database_path, TABLE, WAIT_TIME)
 
@@ -70,6 +61,31 @@ all_user_messages_grouped = group_user_messages(all_user_messages, all_ai_times,
 
 messages0 = config_messages['messages0']
 messages0_ = complete_messages(all_user_messages_grouped, all_ai_messages, messages0)
+
+#### CORRECT THIS PART. CODED UNDER EXTREME TIREDNESS
+all_strings = ""
+for message in all_user_messages_grouped:
+    all_strings += message
+for ai_message in all_ai_messages:
+    all_strings += ai_message
+
+all_strings += config_messages['messages0'][0]['content']
+
+
+######### EXHAUSTED CODING OVER
+
+
+# did something: moved the model till I got all the messages. 
+start = datetime.now()
+model = llama_cpp.Llama(
+    model_path=model_path,
+    chat_format="llama-2",
+    verbose=False,
+    n_ctx=2000
+)
+
+posta1 = datetime.now()
+print(f"it took {posta1-start} to fire up the model")
 
 # This part determines if the AI thinks it can help or not. 
 # Returns a JSON Object
