@@ -52,12 +52,8 @@ with open(config_path) as conf:
 all_user_messages, all_ai_messages, all_user_times, all_ai_times, all_ai_messages, all_ai_times, all_user_messages_grouped, message_info = \
     get_messages_format(database_path, TABLE, WAIT_TIME)
 
-# Tengo que cambiar esto por user_ai_user_ai  . . . . 
-
-#### CORRECT THIS PART. CODED UNDER EXTREME TIREDNESS
 start = datetime.now()
 
-# did something: moved the model till I got all the messages. 
 n_ctx, all_ai_messages, all_user_messages_grouped = get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages)
 
 print(f"first model and tokenization took {datetime.now() - start}") 
@@ -113,7 +109,7 @@ if not answer_dict.get("puedo_ayudar", False):
         messages = messages_no_info,
         temperature=0.25,
         max_tokens=5000
-  )['choices'][0]['message']['content'].strip()         
+  )['choices'][0]['message']['content'].strip()
 elif table:
     if table == "Servicios_programados" and answer_dict["es_duda?"]:
         informacion, columnas = get_info_for_ai(info_data_path, table,columns="Domicilio, Horario_ser", conditions=["telefono_cliente=?"],variables=(message_info[1],))
@@ -173,25 +169,10 @@ message_id = message_info[0] + "_ai"
 chat_completion = check_chat_completion(chat_completion, STRINGS)
 
 print(f"The AI responded: \n{chat_completion}")
-# print(f"response is {response}")
 
 values = (message_id,message_info[1],message_info[2],0,1,chat_completion)
 
 insert_into_database(values, database_path)
 
 print(f"The whole process took {datetime.now()-start}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+   
