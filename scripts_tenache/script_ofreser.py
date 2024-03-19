@@ -9,12 +9,11 @@ import numpy as np
 import pandas as pd
 import yaml
 from auxiliary_funcs import get_info_for_ai, extract_json_from_string, extract_from_database, \
-  transform_to_datetime, complete_messages, group_user_messages, insert_into_database,check_extra_ai_message, check_chat_completion
+  transform_to_datetime, complete_messages, group_user_messages, insert_into_database,\
+    check_extra_ai_message, check_chat_completion, get_messages_format,\
+        get_rid_old_messages
 
-
-# TODO: Limit number of messages/tokens so that AI doesn't get so confused. 
-# Have to change something about complete messages, maybe. 
-## Right now I can't really do it ... 
+STRINGS = ["INST", "ASSISTANT","SYS"]
 
 response_path = os.path.join("\\","Users", "tenache89", "Desktop","llama.cpp","scripts_tenache")
 
@@ -47,50 +46,27 @@ config_path = os.path.join(config_folder, config_name)
 with open(config_path) as conf:
     config_messages = yaml.safe_load(conf)
 
+# CHECK IF THIS FUNCTION WORKS ... 
 
 
-all_user_messages, all_ai_messages, all_user_times, all_ai_times, message_info = extract_from_database(database_path, TABLE, WAIT_TIME)
+all_user_messages, all_ai_messages, all_user_times, all_ai_times, all_ai_messages, all_ai_times, all_user_messages_grouped, message_info = \
+    get_messages_format(database_path, TABLE, WAIT_TIME)
 
-all_ai_messages, all_ai_times, all_user_times, database_path = check_extra_ai_message(all_ai_messages, all_ai_times, all_user_times, database_path)
-        
-
-all_user_times, all_ai_times = transform_to_datetime(all_user_times, all_ai_times)
-
-all_user_messages_grouped = group_user_messages(all_user_messages, all_ai_times, all_user_times)
 # Tengo que cambiar esto por user_ai_user_ai  . . . . 
 
-messages0 = config_messages['messages0']
-messages0_ = complete_messages(all_user_messages_grouped, all_ai_messages, messages0)
-
 #### CORRECT THIS PART. CODED UNDER EXTREME TIREDNESS
-all_strings = ""
-for message in all_user_messages_grouped:
-    all_strings += message
-for ai_message in all_ai_messages:
-    all_strings += ai_message[-1]
-
-all_strings += config_messages['messages0'][0]['content']
-
 start = datetime.now()
 
-first_model = llama_cpp.Llama(
-    model_path=model_path,
-    chat_format="llama-2",
-    verbose=False,
-    n_ctx=2000
-)
-
-tokens = first_model.tokenize(all_strings.encode('utf-8'))
-######### EXHAUSTED CODING OVER
-n_ctx = len(tokens) + 512
-print(f"first model and tokenization took {datetime.now() - start}")
 # did something: moved the model till I got all the messages. 
+n_ctx, all_ai_messages, all_user_messages_grouped = get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages)
+
+print(f"first model and tokenization took {datetime.now() - start}") 
 
 model = llama_cpp.Llama(
     model_path=model_path,
     chat_format="llama-2",
-    verbose=False,
-    n_ctx=n_ctx
+    verbose=True,
+    n_ctx = n_ctx
 )
 
 posta1 = datetime.now()
@@ -98,6 +74,9 @@ print(f"it took {posta1-start} to fire up the model")
 
 # This part determines if the AI thinks it can help or not. 
 # Returns a JSON Object
+
+messages0 = config_messages['messages0']
+messages0_ = complete_messages(all_user_messages_grouped, all_ai_messages, messages0)
 
 chat_completion0 = model.create_chat_completion(
   messages= messages0_,
@@ -113,7 +92,7 @@ print(f"It took about {posta2 - posta1} to complete the first response")
 
 correct_keys = {"es_duda?","puedo_ayudar", "informacion_requerida"}
 messages_json = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_json'])
-answer_dict = extract_json_from_string(chat_completion0, model, messages_json, correct_keys)
+answer_dict = extract_json_from_string(chat_completion0, model, messages_json, correct_keys, STRINGS)
 
 print(f"This JSON will be passed on to the next AI: {answer_dict}")
 print(f"This is what is trying to be answered: {all_user_messages_grouped[-1]}")
@@ -149,6 +128,7 @@ elif table:
         if not informacion or not columnas:
             chat_completion = f"Hubo algun problema. Por favor, comunicate con un humano al\n numero de telefono:\
                 {TELEFONO}\n whatsapp:{WHATSAPP}\n, o celular {CELULAR}"
+            
     elif answer_dict["es_duda?"] and answer_dict["puedo_ayudar"]:
         config_messages['messages_info'][0]['content'] = config_messages['messages_info'][0]['content'].format(table=table,columnas=columnas,informacion=informacion)
         messages_info = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_info'])
@@ -190,7 +170,7 @@ else:
 
 message_id = message_info[0] + "_ai"
 
-chat_completion = check_chat_completion(chat_completion)
+chat_completion = check_chat_completion(chat_completion, STRINGS)
 
 print(f"The AI responded: \n{chat_completion}")
 # print(f"response is {response}")
@@ -199,13 +179,7 @@ values = (message_id,message_info[1],message_info[2],0,1,chat_completion)
 
 insert_into_database(values, database_path)
 
-
 print(f"The whole process took {datetime.now()-start}")
-  
-
-
-
-
 
 
 

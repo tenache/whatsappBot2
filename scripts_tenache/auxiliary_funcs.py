@@ -4,18 +4,68 @@ from datetime import timedelta
 import json
 import random as rr
 from datetime import datetime
+import llama_cpp
 
-def check_chat_completion(chat_completion):
+def get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages):
+    all_strings = ""
+    for message in all_user_messages_grouped:
+        all_strings += message
+    for ai_message in all_ai_messages:
+        all_strings += ai_message[-1]
+
+    all_strings += config_messages['messages0'][0]['content']
+
+
+
+    first_model = llama_cpp.Llama(
+        model_path=model_path,
+        chat_format="llama-2",
+        verbose=False,
+        n_ctx=2000
+    )
+
+    tokens = first_model.tokenize(all_strings.encode('utf-8'))
+    ######### EXHAUSTED CODING OVER
+    n_ctx = len(tokens) + 256
+    print(f"Total tokens is {len(tokens)}")
+    if len(tokens) > 800:
+        all_user_messages_grouped.pop(0)
+        all_ai_messages.pop(0)
+    
+    return n_ctx, all_ai_messages, all_user_messages_grouped
+
+def get_messages_format(database_path, TABLE, WAIT_TIME):
+    all_user_messages, all_ai_messages, all_user_times, all_ai_times, message_info = extract_from_database(database_path, TABLE, WAIT_TIME)
+
+    all_ai_messages, all_ai_times, all_user_times, database_path = check_extra_ai_message(all_ai_messages, all_ai_times, all_user_times, database_path)
+            
+    all_user_times, all_ai_times = transform_to_datetime(all_user_times, all_ai_times)
+
+    all_user_messages_grouped = group_user_messages(all_user_messages, all_ai_times, all_user_times)
+    return all_user_messages, all_ai_messages, all_user_times, all_ai_times, all_ai_messages, all_ai_times, all_user_messages_grouped, message_info
+
+def check_chat_completion(chat_completion, strings):
     index_inst = -1
-    index_inst = chat_completion.find("INST")
-    if index_inst != -1:
-        chat_completion = chat_completion[index_inst+7:]
-        index_inst = chat_completion.find("INST")
-    if index_inst != -1:
-        chat_completion = chat_completion[:index_inst]
-    index_inst = chat_completion.find("\n")
-    if index_inst != -1:
-        chat_completion = chat_completion[:index_inst]
+    
+    for string in strings:
+        index_inst = chat_completion.find(string)
+        if index_inst != -1:
+            chat_completion = chat_completion[index_inst+len(string):]
+        index_inst2 = chat_completion.find(string)
+        if index_inst2 != -1:
+            chat_completion = chat_completion[:index_inst2]
+
+    # if index_inst != -1:
+    #     chat_completion = chat_completion[index_inst+7:]
+    #     index_inst = chat_completion.find("<<ASSISTANT>>")    
+    # if index_inst != -1:
+    #     chat_completion = chat_completion[index_inst+7:]
+    #     index_inst = chat_completion.find("<</ASSISTANT>>")   
+    # if index_inst != -1:
+    #     chat_completion = chat_completion[:index_inst]
+    # index_inst = chat_completion.find("\n")
+    # if index_inst != -1:
+    #     chat_completion = chat_completion[:index_inst]
     return chat_completion
 
 
@@ -74,8 +124,8 @@ def extract_json_from_string_simple(s):
     return new_string 
 
 
-def extract_json_from_string(new_string, model, messages_json, correct_keys):
-    new_string =  check_chat_completion(new_string)
+def extract_json_from_string(new_string, model, messages_json, correct_keys, strings):
+    new_string =  check_chat_completion(new_string, strings)
     new_string = extract_json_from_string_simple(new_string)
     for _ in range(2):
         try:
