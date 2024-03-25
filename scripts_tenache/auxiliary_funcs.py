@@ -6,6 +6,70 @@ import random as rr
 from datetime import datetime
 import llama_cpp
 
+MAX_TOKENS = 3000
+def thomaschain(answer_dict, all_user_messages_grouped,all_ai_messages,config_messages, \
+                table, columnas, informacion, STRINGS, info_data_path, model, consts, message_info, \
+                    extra_info_tables={'Servicios_programados':{"columnas":"Domicilio ,Horario_ser","conditions":"telefono_cliente=?"}}):
+    TELEFONO = consts['TELEFONO']
+    WHATSAPP = consts['WHATSAPP']
+    CELULAR = consts['CELULAR']
+
+    if not answer_dict.get("puedo_ayudar", False):
+    # if AI thinks it cannot help: 
+        if answer_dict.get("es_saludo", False):
+            chat_completion = config_messages['automatic_more_info']
+        else: 
+            chat_completion = config_messages['automatic_no_info']
+        
+    elif table:
+    # it AI thinks it can help and it chose a table
+        if table in extra_info_tables:
+        # if AI thinks it can help and it chose a table and it thinks it's answering a question and the table is in the ones with extra_info (further queries required). 
+            informacion, columnas = get_info_for_ai(info_data_path, table,columns=extra_info_tables[table]["columnas"], \
+                                                    conditions=[extra_info_tables[table]["conditions"]],variables=(message_info[1],))
+            config_messages['messages_info'][0]['content'] = config_messages['messages_info'][0]['content'].format(table=table,columnas=columnas,informacion=informacion)
+            messages_info = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_info'])
+            chat_completion = model.create_chat_completion(
+                messages=messages_info,
+                temperature=0,
+                max_tokens=MAX_TOKENS
+            )
+            chat_completion = chat_completion['choices'][0]['message']['content'].strip() 
+            if not informacion or not columnas:
+                chat_completion = f"Hubo algun problema. Por favor, comunicate con un humano al\n numero de telefono:\
+                    {TELEFONO}\n whatsapp:{WHATSAPP}\n, o celular {CELULAR}"
+                
+        elif answer_dict["es_duda?"]:
+        # if AI thinks it can help and it chose a table and table doesn't require further queries, but AI thinks its answering a question.  
+            config_messages['messages_info'][0]['content'] = \
+                config_messages['messages_info'][0]['content'].format(table=table,columnas=columnas,informacion=informacion)
+            messages_info = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_info'])
+            chat_completion = model.create_chat_completion(
+            messages = messages_info,
+            temperature = 0,
+            max_tokens=MAX_TOKENS
+        )['choices'][0]['message']['content'].strip()
+        
+        else:
+        # AI thinks it can help and it chose a table, but AI doesn't think it's a question: try to inquire more about the question. 
+            chat_completion = config_messages['automatic_more_info'] 
+        # else:
+        #     chat_completion = f"Hubo algun problema. Por favor, comunicate con un humano al\n numero de telefono:\
+        #             {TELEFONO}\n whatsapp:{WHATSAPP}\n, o celular {CELULAR}"       
+
+    elif not answer_dict.get('es_duda?', False):
+    # if AI thinks it can help, but there is no table selected, and AI thinks its NOT answering a question. 
+        chat_completion = config_messages['automatic_more_info']
+    
+    # elif answer_dict.get('puedo_ayudar', False):
+    #     chat_completion = config_messages['automatic_no_info']
+    else:
+    # if AI thinks it can heelp, but there is no table selected, and AI thinks its answering a question. 
+        chat_completion = config_messages['automatic_more_info']    
+    
+    chat_completion = check_chat_completion(chat_completion, STRINGS)
+    return chat_completion
+
 def get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages):
     all_strings = ""
     for message in all_user_messages_grouped:
@@ -50,10 +114,18 @@ def check_chat_completion(chat_completion, strings):
     for string in strings:
         index_inst = chat_completion.find(string)
         if index_inst != -1:
-            chat_completion = chat_completion[index_inst+len(string):]
-        index_inst2 = chat_completion.find(string)
-        if index_inst2 != -1:
-            chat_completion = chat_completion[:index_inst2]
+            index_inst2 = chat_completion[index_inst+len(string):].find(string)
+            if index_inst2 != -1:
+                chat_completion = chat_completion[index_inst+len(string):index_inst2+index_inst+len(string)]
+            else:
+                chat_completion = chat_completion[:index_inst]
+        
+          
+        # if index_inst != -1:
+        #     chat_completion = chat_completion[index_inst+len(string):]
+        # index_inst2 = chat_completion.find(string)
+        # if index_inst2 != -1:
+        #     chat_completion = chat_completion[:index_inst2]
 
     # if index_inst != -1:
     #     chat_completion = chat_completion[index_inst+7:]
@@ -183,7 +255,6 @@ def group_user_messages(all_user_messages, all_ai_times, all_user_times):
     all_user_messages = pd.Series(all_user_messages)
     all_user_messages_grouped = []
     next_start = 0
-
         
     for i in range(len(all_ai_times)):
         index = all_user_times - all_ai_times[i] > timedelta(days=0)
@@ -195,8 +266,6 @@ def group_user_messages(all_user_messages, all_ai_times, all_user_times):
     if not all_user_messages_grouped:
         all_user_messages_grouped.append(all_user_messages[0][-1])
     return all_user_messages_grouped
-    
-
     
 def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
     for i in range(len(all_user_messages_grouped)-1,-1,-1):
@@ -230,12 +299,14 @@ def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variab
                 c.execute(query, variables)
             except sqlite3.OperationalError as err:
                 print(err)
+                print(f"query is {query}")
                 print("Most likely error was a mistake in table name from ai")
                 return None, None
         else:
             try:
                 c.execute(query)
             except sqlite3.OperationalError as err:
+                print(f"query is {query}")
                 print(err)
                 print("Most likely error was a mistake in table name from ai")
                 return None, None
@@ -262,5 +333,13 @@ def insert_into_database(values, database_path):
             except:
                 new_id = values[0]  + "_" + str(rr.randint(0,10))
                 values=(new_id,values[1],values[1],values[2],values[3],values[4],values[5])
+
+def cut_ai_messages(all_ai_messages,key_strings, config_messages):
+    for i, ai_message in enumerate(all_ai_messages):
+        for key_string in key_strings:
+            index = ai_message[-1].find(key_string)
+            if index != -1:
+                all_ai_messages[i] = all_ai_messages[i][:-1] + (key_strings.get(key_string, config_messages['more_info_replace']),)
+    return all_ai_messages
 
 

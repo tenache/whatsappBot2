@@ -1,0 +1,7 @@
+Turdus-trained-20-int8WORKS . As the name suggests, this works. Too many messages completely confuses it, though.
+
+LewdGem-40B.q8_0.gguf TOO BIG. NOT TOO SMART ANYWAY. 
+# model_name = 'emerhyst-20b.Q8_0.gguf'. DIDNT WORK
+# model_name = 'c4ai-command-r-v01-Q8_0.gguf'. DIDNT WORK
+
+

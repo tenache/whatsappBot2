@@ -6,10 +6,14 @@ const Cris = '5493874750755@c.us';
 const juegosSalta = '5493875699648@c.us';
 const Marco = '5493874149123@c.us';
 const Mary = '5493874737179@c.us';
+const Agu = '34655127590@c.us';
 
 const TELEFONO = '4212368';
 const CELULAR = '387528693';
 const WHATSAPP = 'https://wa.me/5493875286093';
+
+const python_script = "script_ofreser_predeterminado.py"
+// const python_script = "script_ofreser.py"
 
 const waitTime = 5_000;
 const qrcode = require('qrcode-terminal');
@@ -41,13 +45,14 @@ async function getChatAsync(message) {
 
 client.on('message', (message) => {
 	console.log(message.body);
+    console.log(message.from);
     chat = getChatAsync(message);
 
 });
 
 
 const sqlite3 = require('sqlite3').verbose();
-const database_path = './whatsapp3.db'
+const database_path = 'databases/whatsapp3.db'
 const db = new sqlite3.Database(database_path, (err) => {
     if (err) {
         console.error(err.message);
@@ -94,8 +99,11 @@ function sleep(ms){
 function respond(message, chat) {
     console.log("About to begin the python process");
     // After successful insertion, execute the Python script
-    var pythonProcess = spawn("python",['script_ofreser.py']);
-    pythonProcess.stdout.on('data',(data) => {console.log(`stdout: ${data}`)})
+    var pythonProcess = spawn("python",['script_ofreser_predeterminado.py']);
+    pythonProcess.stdout.on('data',(data) => {console.log(`stdout: ${data}`)});
+    pythonProcess.stderr.on('data',(data)=> {
+        console.error(`stderr: ${data}`);
+    });
     pythonProcess.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
     
@@ -146,7 +154,7 @@ async function handleInsertions(message)  {
     else
     {
         var [chat_ready, chat] = await getChatAsync(message);
-        if (message.from === Mary || message.from === juegosSalta || message.from === Lau || message.from === Cris || message.from === Foca || message.from === Marco || message.from === Sabri || chat_ready === true & message.type === "TEXT") {
+        if (message.from === Foca || chat_ready === true & message.type === "TEXT") {
             try {
                 await insert_user(message);
                 await insert_message(message);

@@ -30,11 +30,11 @@ TABLE = "messages"
 
 # HERE ARE SOME OF THE PATHS WE WILL BE USING
 
-model_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache") 
+model_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache","models") 
 # model_name = "mistral-7b-instruct-v0.2.Q6_K.gguf"
 model_name = 'Turdus-trained-20-int8.gguf'
 model_path = os.path.join(model_folder, model_name)
-database_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache")
+database_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache","databases")
 database_name = "whatsapp3.db"
 database_path = os.path.join(database_folder,database_name)
 info_data_name = 'info_ofreser_fict2.db'
@@ -45,9 +45,6 @@ config_path = os.path.join(config_folder, config_name)
 
 with open(config_path) as conf:
     config_messages = yaml.safe_load(conf)
-
-# CHECK IF THIS FUNCTION WORKS ... 
-
 
 all_user_messages, all_ai_messages, all_user_times, all_ai_times, all_ai_messages, all_ai_times, all_user_messages_grouped, message_info = \
     get_messages_format(database_path, TABLE, WAIT_TIME)
@@ -102,6 +99,8 @@ posta3 = datetime.now()
 
 print(f"The second completion is underway")
 
+# 
+
 if not answer_dict.get("puedo_ayudar", False):
     messages_no_info = complete_messages(all_user_messages_grouped, all_ai_messages, config_messages['messages_no_info'])
     messages_no_info[0]['content'] = messages_no_info[0]['content'].format(TELEFONO=TELEFONO, CELULAR=CELULAR,WHATSAPP=WHATSAPP)
@@ -109,7 +108,8 @@ if not answer_dict.get("puedo_ayudar", False):
         messages = messages_no_info,
         temperature=0.25,
         max_tokens=5000
-  )['choices'][0]['message']['content'].strip()         
+  )['choices'][0]['message']['content'].strip()   
+          
 elif table:
     if table == "Servicios_programados" and answer_dict["es_duda?"]:
         informacion, columnas = get_info_for_ai(info_data_path, table,columns="Domicilio, Horario_ser", conditions=["telefono_cliente=?"],variables=(message_info[1],))
@@ -155,14 +155,14 @@ elif not answer_dict.get('es_duda?', False):
     chat_completion = chat_completion['choices'][0]['message']['content'].strip()
   
 else:
-  messages_no_info = complete_messages(all_user_messages_grouped, all_ai_messages, config_messages['messages_no_info'])
+    messages_no_info = complete_messages(all_user_messages_grouped, all_ai_messages, config_messages['messages_no_info'])
 
-  chat_completion = model.create_chat_completion(
+    chat_completion = model.create_chat_completion(
     messages = messages_no_info,
     temperature=0.25,
     max_tokens=5000
-  )
-  chat_completion = chat_completion['choices'][0]['message']['content'].strip()
+    )
+    chat_completion = chat_completion['choices'][0]['message']['content'].strip()
 
 message_id = message_info[0] + "_ai"
 
