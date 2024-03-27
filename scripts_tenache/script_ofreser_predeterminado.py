@@ -13,6 +13,12 @@ from auxiliary_funcs import get_info_for_ai, extract_json_from_string, extract_f
     check_extra_ai_message, check_chat_completion, get_messages_format,\
         get_rid_old_messages, thomaschain, cut_ai_messages
 import logging
+
+## TODO: This is in the wrong script, but I think it's cool. I want to make the user experience as uncomplicated as possible. 
+## So, I want to make a sort of super easy template that both creates a table with the information, creates the config yaml,
+## and gets the thing
+## going. Maybe even connecting automatically with the whatsapp module. 
+
 # -----------------------------------------------MODELS ------------------------------------------------------
     # model_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache","models") 
     # model_name = 'Turdus-trained-20-int8WORKS.gguf'
@@ -25,8 +31,6 @@ import logging
     # model_name = 'LewdGem-40B.q8_0.gguf'
 # ---------------------------------------------------------------------------------------------------------------
 
-# TODO : HACER QUE ALGUNAS RTTAS. SEAN AUTOMATICAS, QUE NO PASEN POR LA IA
-# VER QUE MAS PUEDO AGREGAR A LA DEMO, COMO PARA ARREGLAR. 
 
 # TODO: probar mas modelos para ver si alguno es mejor, especialmente para conversaciones un poco mas largas... 
 
@@ -40,19 +44,22 @@ def ai_respond(
         WAIT_TIME = "-5 minutes",
         TABLE = "messages",
         model_folder= "/home/tenache/whatsappBot2/scripts_tenache/models",
-        model_name = 'Kunoichi-DPO-v2-7B-Q8_0-imatrix.gguf',
+        model_name = 'vicuna-13b-v1.5.gguf',
         info_data_name = 'info_ofreser_fict2.db',
         config_folder = "/home/tenache/whatsappBot2/scripts_tenache",
         config_name = "ofreser_config.yaml",
         key_strings_keys = ['Lamentablemente, no dispongo de toda la información necesaria para ayudarlo directamente.',
         'Soy la IA de O.FRE.SER -Gestión Integral de Plagas. \nEstoy aquí para entender tus necesidades'],
         database_folder = os.path.join("/","home","tenache","whatsappBot2","scripts_tenache","databases"),
-        database_name = "whatsapp3.db"
+        database_name = "whatsapp3.db",
+        debug=True
 
 ):
-
-    logging.basicConfig(level=logging.DEBUG)
-    response_path = os.path.join("\\","Users", "tenache89", "Desktop","llama.cpp","scripts_tenache")
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+        response_path = os.path.join("\\","Users", "tenache89", "Desktop","llama.cpp","scripts_tenache")
+    else:
+        logging.basicConfig(level=logging.WARNING)
 
     # HERE ARE SOME OF THE PATHS WE WILL BE USING
 
@@ -69,7 +76,7 @@ def ai_respond(
 
     start = datetime.now()
 
-    n_ctx, all_ai_messages, all_user_messages_grouped = get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages)
+    n_ctx, all_ai_messages, all_user_messages_grouped = get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages, debug=debug)
 
     key_strings = {
         key_strings_keys[0]:config_messages['no_info_replace'],
@@ -88,13 +95,13 @@ def ai_respond(
     )
 
     posta1 = datetime.now()
-    print(f"it took {posta1-start} to fire up the model")
+    logging.debug(f"it took {posta1-start} to fire up the model")
 
     # This part determines if the AI thinks it can help or not. 
     # Returns a JSON Object
 
     messages0 = config_messages['messages0']
-    messages0_ = complete_messages(all_user_messages_grouped, all_ai_messages, messages0)
+    messages0_ = complete_messages(all_user_messages_grouped, all_ai_messages, messages0, debug=debug)
 
     chat_completion0 = model.create_chat_completion(
     messages= messages0_,
@@ -108,8 +115,8 @@ def ai_respond(
     logging.debug(f"It took about {posta2 - posta1} to complete the first response")
 
     correct_keys = {"es_duda?","es_saludo","puedo_ayudar", "informacion_requerida"}
-    messages_json = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_json'])
-    answer_dict = extract_json_from_string(chat_completion0, model, messages_json, correct_keys, STRINGS)
+    messages_json = complete_messages(all_user_messages_grouped, all_ai_messages,config_messages['messages_json'], debug=debug)
+    answer_dict = extract_json_from_string(chat_completion0, model, messages_json, correct_keys, STRINGS, debug=debug)
 
     logging.debug(f"This JSON will be passed on to the next AI: {answer_dict}")
     logging.debug(f"This is what is trying to be answered: {all_user_messages_grouped[0]}")
@@ -117,7 +124,7 @@ def ai_respond(
     if answer_dict:
         table = answer_dict['informacion_requerida']
     if table:
-        informacion, columnas = get_info_for_ai(info_data_path, table)
+        informacion, columnas = get_info_for_ai(info_data_path, table, debug=debug)
         
     posta3 = datetime.now()
 
@@ -138,7 +145,7 @@ def ai_respond(
         message_info
         )
 
-    logging.debug(f"The AI responded: \n{chat_completion}")
+    logging.warning(f"The AI responded: \n{chat_completion}")
 
     values = (message_id,message_info[1],message_info[2],0,1,chat_completion)
 

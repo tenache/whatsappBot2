@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Tablas y Columnas</title>
+    <script>
+        let tableCount = 0; // Keep track of how many tables have been added
+
+        function addTableForm() {
+            const container = document.getElementById("tables-container");
+            const tableId = `table_${tableCount}`;
+            const tableFormHTML = `
+                <div id="${tableId}">
+                    <label>Nombre de tabla:</label>
+                    <input type="text" name="${tableId}_name" placeholder="Informacion General"required>
+                    <div id="${tableId}_columns">
+                        <!-- Columns will be added here -->
+                    </div>
+                    <button type="button" onclick="addColumnForm('${tableId}')">Agregar Columna</button>
+                    <br><br>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', tableFormHTML);
+            addColumnForm(tableId); // Automatically add one column to the new table
+            tableCount++; // Increment the table counter
+        }
+
+        function addColumnForm(tableId) {
+            const tableContainer = document.getElementById(`${tableId}_columns`);
+            const columnCount = tableContainer.children.length;
+            const columnFormHTML = `
+                <div>
+                    <label>Columna ${columnCount + 1} Nombre:</label>
+                    <input type="text" name="${tableId}_col${columnCount}_name" placeholder="Tipo de informacion"required>
+                    <label>Columna ${columnCount + 1} Tipo de dato:</label>
+                    <select name="${tableId}_col${columnCount}_type">
+                        <option value="texto">Texto</option>
+                        <option value="entero">Entero</option>
+                        <option value="decimal">Decimal</option>
+                        <option value="fecha">Fecha</option>
+                        <option value="booleano">Booleano</option>
+                    </select>
+                    <div id = "${tableId}_col${columnCount}_info"></div>
+                    <button type="button" onclick="addColumnInfo('${tableId}_col${columnCount}')">Agregar Info columna</button>
+                </div>
+            `;
+            tableContainer.insertAdjacentHTML('beforeend', columnFormHTML);
+        }
+        function addColumnInfo(columnId) {
+            const columnContainer = document.getElementById(`${columnId}_info`);
+            const infoCount = columnContainer.children.length;
+            const infoFormHTML = `
+            <div>
+                <label>Info ${infoCount + 1}:</label>
+                <input type="text" name="${columnId}_info${infoCount}" placeholder="Detalle adicional">
+            `
+            columnContainer.insertAdjacentHTML('beforeend', infoFormHTML)
+        }
+    </script>
+</head>
+<body>
+
+<form id="tables-form" method="post" action="/create_tables">
+    <div id="tables-container">
+        <label>Nombre completo de tu empresa</label>
+        <input name="nombre_de_empresa" type="text" placeholder="O.FRE.SER - Gestión Integral de Plagas"/>
+        <!-- Table forms will be added here -->
+    </div>
+    <button type="button" onclick="addTableForm()">Agregar Tabla</button>
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+    // Automatically add one table form on initial load
+    addTableForm();
+</script>
+
+</body>
+</html>

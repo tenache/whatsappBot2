@@ -5,6 +5,7 @@ import json
 import random as rr
 from datetime import datetime
 import llama_cpp
+import logging
 
 MAX_TOKENS = 3000
 def thomaschain(answer_dict, all_user_messages_grouped,all_ai_messages,config_messages, \
@@ -36,6 +37,7 @@ def thomaschain(answer_dict, all_user_messages_grouped,all_ai_messages,config_me
             )
             chat_completion = chat_completion['choices'][0]['message']['content'].strip() 
             if not informacion or not columnas:
+            # TODO: Handle this a little better ...
                 chat_completion = f"Hubo algun problema. Por favor, comunicate con un humano al\n numero de telefono:\
                     {TELEFONO}\n whatsapp:{WHATSAPP}\n, o celular {CELULAR}"
                 
@@ -53,16 +55,12 @@ def thomaschain(answer_dict, all_user_messages_grouped,all_ai_messages,config_me
         else:
         # AI thinks it can help and it chose a table, but AI doesn't think it's a question: try to inquire more about the question. 
             chat_completion = config_messages['automatic_more_info'] 
-        # else:
-        #     chat_completion = f"Hubo algun problema. Por favor, comunicate con un humano al\n numero de telefono:\
-        #             {TELEFONO}\n whatsapp:{WHATSAPP}\n, o celular {CELULAR}"       
+ 
 
     elif not answer_dict.get('es_duda?', False):
     # if AI thinks it can help, but there is no table selected, and AI thinks its NOT answering a question. 
         chat_completion = config_messages['automatic_more_info']
     
-    # elif answer_dict.get('puedo_ayudar', False):
-    #     chat_completion = config_messages['automatic_no_info']
     else:
     # if AI thinks it can heelp, but there is no table selected, and AI thinks its answering a question. 
         chat_completion = config_messages['automatic_more_info']    
@@ -70,7 +68,11 @@ def thomaschain(answer_dict, all_user_messages_grouped,all_ai_messages,config_me
     chat_completion = check_chat_completion(chat_completion, STRINGS)
     return chat_completion
 
-def get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages):
+def get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, config_messages, debug=True):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
     all_strings = ""
     for message in all_user_messages_grouped:
         all_strings += message
@@ -78,8 +80,6 @@ def get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, 
         all_strings += ai_message[-1]
 
     all_strings += config_messages['messages0'][0]['content']
-
-
 
     first_model = llama_cpp.Llama(
         model_path=model_path,
@@ -91,10 +91,10 @@ def get_rid_old_messages(all_user_messages_grouped, all_ai_messages,model_path, 
     tokens = first_model.tokenize(all_strings.encode('utf-8'))
     ######### EXHAUSTED CODING OVER
     n_ctx = len(tokens) + 256
-    print(f"Total tokens is {len(tokens)}")
-    if len(tokens) > 800:
-        all_user_messages_grouped.pop(0)
-        all_ai_messages.pop(0)
+    logging.debug((f"Total tokens is {len(tokens)}"))
+    if len(tokens) > 1000:
+        all_user_messages_grouped.pop(-1)
+        all_ai_messages.pop(-1)
     
     return n_ctx, all_ai_messages, all_user_messages_grouped
 
@@ -118,26 +118,9 @@ def check_chat_completion(chat_completion, strings):
             if index_inst2 != -1:
                 chat_completion = chat_completion[index_inst+len(string):index_inst2+index_inst+len(string)]
             else:
-                chat_completion = chat_completion[:index_inst]
+                chat_completion = chat_completion[index_inst+len(string):]
         
-          
-        # if index_inst != -1:
-        #     chat_completion = chat_completion[index_inst+len(string):]
-        # index_inst2 = chat_completion.find(string)
-        # if index_inst2 != -1:
-        #     chat_completion = chat_completion[:index_inst2]
 
-    # if index_inst != -1:
-    #     chat_completion = chat_completion[index_inst+7:]
-    #     index_inst = chat_completion.find("<<ASSISTANT>>")    
-    # if index_inst != -1:
-    #     chat_completion = chat_completion[index_inst+7:]
-    #     index_inst = chat_completion.find("<</ASSISTANT>>")   
-    # if index_inst != -1:
-    #     chat_completion = chat_completion[:index_inst]
-    # index_inst = chat_completion.find("\n")
-    # if index_inst != -1:
-    #     chat_completion = chat_completion[:index_inst]
     return chat_completion
 
 
@@ -196,7 +179,11 @@ def extract_json_from_string_simple(s):
     return new_string 
 
 
-def extract_json_from_string(new_string, model, messages_json, correct_keys, strings):
+def extract_json_from_string(new_string, model, messages_json, correct_keys, strings, debug=True):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
     new_string =  check_chat_completion(new_string, strings)
     new_string = extract_json_from_string_simple(new_string)
     for _ in range(2):
@@ -206,15 +193,15 @@ def extract_json_from_string(new_string, model, messages_json, correct_keys, str
 
             return json_dict
         except json.JSONDecodeError as err:
-            print(f"Error loading json from response string: \n{err}")
-            print(f"The string is now is {new_string}")
-            print(f"trying to extract from json")
+            logging.debug((f"Error loading json from response string: \n{err}"))
+            logging.debug((f"The string is now {new_string}"))
+            logging.debug((f"trying to extract from json"))
             new_string = model.create_chat_completion(
                 messages = messages_json,
                 temperature=0,
                 max_tokens=100
             )['choices'][0]['message']['content'].strip()
-            print(f"new string after AI is {new_string}")
+            logging.debug((f"new string after AI is {new_string}"))
             extract_json_from_string_simple(new_string)
             json_dict = {}
     return json_dict
@@ -267,7 +254,12 @@ def group_user_messages(all_user_messages, all_ai_times, all_user_times):
         all_user_messages_grouped.append(all_user_messages[0][-1])
     return all_user_messages_grouped
     
-def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
+def complete_messages(all_user_messages_grouped, all_ai_messages, messages, debug=True):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
+
     for i in range(len(all_user_messages_grouped)-1,-1,-1):
         try:
             messages.append({
@@ -275,7 +267,7 @@ def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
                 "content":all_ai_messages[i][5]
             })
         except IndexError as err:
-            print(f"Expected error in complete message: \n{err}")
+            logging.debug((f"Expected error in complete message: \n{err}"))
 
         messages.append({
             "role":"user",
@@ -284,7 +276,11 @@ def complete_messages(all_user_messages_grouped, all_ai_messages, messages):
 
     return messages
         
-def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variables=None):
+def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variables=None, debug=True):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
     if not columns:
         columns = '*'
     with sqlite3.connect(info_data_path) as conn:
@@ -298,29 +294,37 @@ def get_info_for_ai(info_data_path, table, columns=None, conditions=None, variab
             try:
                 c.execute(query, variables)
             except sqlite3.OperationalError as err:
-                print(err)
-                print(f"query is {query}")
-                print("Most likely error was a mistake in table name from ai")
+                logging.debug((err))
+                logging.debug((f"query is {query}"))
+                logging.debug(("Most likely error was a mistake in table name from ai"))
                 return None, None
         else:
             try:
                 c.execute(query)
             except sqlite3.OperationalError as err:
-                print(f"query is {query}")
-                print(err)
-                print("Most likely error was a mistake in table name from ai")
+                logging.debug((f"query is {query}"))
+                logging.debug((err))
+                logging.debug(("Most likely error was a mistake in table name from ai"))
                 return None, None
         all_info = c.fetchall()
     column_names = [description[0] for description in c.description]
-    info = all_info[0]
+    try:
+        info = all_info[0]
+        columnas = column_names[0]
+        for column in column_names[1:]:
+            columnas += "," + column
+        informacion = str(info)
 
-    columnas = column_names[0]
-    for column in column_names[1:]:
-        columnas += "," + column
-    informacion = str(all_info[0])
+        for info in all_info[1:]:
+            informacion += "\n" + str(info)
 
-    for info in all_info[1:]:
-        informacion += "\n" + str(info)
+    except IndexError:
+        informacion= ""
+        columnas = ""
+        logging.debug("No info retrieved")
+
+    
+
     return informacion, columnas
 
 def insert_into_database(values, database_path):

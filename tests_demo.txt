@@ -1,0 +1,82 @@
+MARTES 26 DE MARZO DE 2024
+- . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . - . 
+
+Conversacion1: 
+Enter your message for AI here: 
+Hola
+WARNING:root:The AI responded: 
+Hola! Soy la IA de O.FRE.SER -Gestión Integral de Plagas. 
+Estoy aquí para entender tus necesidades. 
+Poseo la siguiente información: 
+
+* Información sobre domicilio y horarios de servicios programados.
+* Horarios de atención al público. 
+* Información general de la empresa. 
+
+En caso de querer contactarte con directamente con un empleado de la empresa, puedes hacerlo a : 
+
+📞 por teléfono (4212368) 
+
+
+📱 celular (387528693) 
+
+
+U+F618: https://wa.me/5493875286093.  
+
+Donde serás atendido tan pronto alguna persona esté libre. 
+
+Enter your message for AI here: 
+Antes que nada: reciben tarjeta? Porque ando corto de efectivo ...
+WARNING:root:The AI responded: 
+Soy la IA de O.FRE.SER - Gestión Integral de Plagas. No especificamos en nuestra información general si recibimos tarjeta de crédito o efectivo como medio de pago. Te recomiendo visitar nuestra página web en 'https://ofreser.com.ar/' o llamarnos al número de teléfono fijo (5493874212368) o al número de celular (549387-387528693) para obtener más detalles sobre nuestros métodos de pago y condiciones financieras.
+Enter your message for AI here: 
+Ok, te hablaba porque tengo un problema: en mi casa aparecieron vegetales parlantes. Ustedes tratan con ese tipo de plagas?
+WARNING:root:The AI responded: 
+Soy la IA de O.FRE.SER - Gestión Integral de Plagas. No especificamos en nuestra información general si recibimos tarjeta de crédito o efectivo como medio de pago. Te recomiendo visitar nuestra página web en 'https://ofreser.com.ar/' o llamarnos al número de teléfono fijo (5493874212368) o al número de celular (549387-387528693) para obtener más detalles sobre nuestros métodos de pago y condiciones financieras.
+
+Conversacion2: 
+Hola
+WARNING:root:The AI responded: 
+Hola! Soy la IA de O.FRE.SER -Gestión Integral de Plagas. 
+Estoy aquí para entender tus necesidades. 
+Poseo la siguiente información: 
+
+* Información sobre domicilio y horarios de servicios programados.
+* Horarios de atención al público. 
+* Información general de la empresa. 
+
+En caso de querer contactarte con directamente con un empleado de la empresa, puedes hacerlo a : 
+
+📞 por teléfono (4212368) 
+
+
+📱 celular (387528693) 
+
+
+U+F618: https://wa.me/5493875286093.  
+
+Donde serás atendido tan pronto alguna persona esté libre. 
+
+
+Enter your message for AI here: 
+Antes que nada: reciben tarjeta? Porque ando corto de efectivo ...  
+WARNING:root:The AI responded: 
+Soy la IA de O.FRE.SER - Gestión Integral de Plagas. No especificamos en nuestra información general si recibimos tarjeta de crédito o efectivo como medio de pago. Te recomiendo visitar nuestra página web en 'https://ofreser.com.ar/' o llamarnos al número de teléfono fijo (5493874212368) o al número de celular (549387-387528693) para obtener más detalles sobre nuestros métodos de pago y condiciones financieras.
+
+Enter your message for AI here: 
+k, te hablaba porque tengo un problema: en mi casa aparecieron vegetales parlantes. Ustedes tratan con ese tipo de plagas?
+WARNING:root:The AI responded: 
+Sí, somos especialistas en la gestión integral de plagas, lo cual incluye el tratamiento y control de diversos tipos de plagas, incluyendo insectos, roedores y microbios. Si tienes problemas con vegetales parlantes, es posible que se trate de algún tipo de insecto o plaga similar. Puedes ponerte en contacto con nosotros para programar una visita y evaluación de tu caso específico. Recuerda nuestros números de contacto: teléfono fijo (5493874212368), celular (549387-387528693) o enviar un mensaje por WhatsApp al número (5493875286093).
+
+Conversacion 3: 
+Enter your message for AI here: 
+Hello, do you speak English? 
+WARNING:root:The AI responded: 
+Soy la IA de O.FRE.SER - Gestión Integral de Plagas. Estoy aquí para responder tus preguntas y sí, hablo inglés. Puedo proporcionarte información sobre nuestra empresa.
+
+O.FRE.SER es una empresa especializada en gestión integral de plagas, ofreciendo servicios contra roedores, insectos y microbios. Nuestros números de contacto incluyen un teléfono fijo (5493874212368), un número de celular (549387-387528693) y un número para WhatsApp (5493875286093) para facilitar la comunicación con nuestros clientes. Nuestra dirección física se encuentra en General Guemes 1340, Salta - Argentina. Puedes encontrar más información en nuestra página web: https://ofreser.com.ar/.
+
+Enter your message for AI here: 
+Where is your adress? 
+WARNING:root:The AI responded: 
+Soy la IA de O.FRE.SER - Gestión Integral de Plagas. Nuestra dirección física se encuentra en General Guemes 1340, Salta - Argentina.

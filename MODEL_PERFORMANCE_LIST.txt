@@ -1,3 +1,5 @@
+Kunoichi-DPO-v2-7B-Q8_0-imatrix.gguf. New winner. Still is a problem if too many messages
+
 Turdus-trained-20-int8WORKS . As the name suggests, this works. Too many messages completely confuses it, though.
 
 WestLake-10.7b-v2-Q8_0.gguf. Surprisingly better than the bigger ones. Not sure its a keeper though.
@@ -6,3 +8,4 @@ LewdGem-40B.q8_0.gguf TOO BIG. NOT TOO SMART ANYWAY.
 # model_name = 'emerhyst-20b.Q8_0.gguf'. DIDNT WORK
 # model_name = 'c4ai-command-r-v01-Q8_0.gguf'. DIDNT WORK
 dolphin-2.7-mixtral-8x7b.Q4_K_M.gguf. THIS IS ONE OF THE WORST SO FAR. 
+
