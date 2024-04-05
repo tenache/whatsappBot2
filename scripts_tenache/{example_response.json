@@ -1,0 +1,44 @@
+{
+    "0": {
+        "cols": [
+            {
+                "name": "e-mail",
+                "type": "texto",
+                "info": [
+                    "traga@sable.com",
+                    "come@poronga.com.ar",
+                    "raro@gordoput.com",
+                    "cajetudo@canchero.blackfish",
+                    "ultimo@ultimo.com.ar"
+                ]
+            },
+            {
+                "name": "tipo de servicios",
+                "type": "texto",
+                "info": [
+                    "destrabador de inodoros",
+                    "catador de telos",
+                    "ultimo",
+                    null,
+                    null
+                ]
+            }
+        ],
+        "name": "Informacion General"
+    },
+    "1": {
+        "cols": [
+            {
+                "name": "duenio",
+                "type": "texto",
+                "info": [
+                    "Dante Canceroso",
+                    "Sabri Ciega",
+                    "Thomi Culon"
+                ]
+            }
+        ],
+        "name": "la saltenita"
+    }
+}
+

@@ -1,4 +1,5 @@
 // TODO: Hacer que no lea el u
+console.log("this is running");
 const Lau = '5493424076693@c.us';
 const Foca = '5493874034462@c.us';
 const Sabri = '5493874690429@c.us';
@@ -13,6 +14,7 @@ const CELULAR = '387528693';
 const WHATSAPP = 'https://wa.me/5493875286093';
 
 const python_script = "script_ofreser_predeterminado.py"
+
 // const python_script = "script_ofreser.py"
 
 const waitTime = 5_000;

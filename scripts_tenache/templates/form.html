@@ -11,8 +11,10 @@
             const tableId = `table_${tableCount}`;
             const tableFormHTML = `
                 <div id="${tableId}">
-                    <label>Nombre de tabla:</label>
-                    <input type="text" name="${tableId}_name" placeholder="Informacion General"required>
+                    <br><label>Nombre de tabla:</label>
+                    <input type="text" name="${tableId}_name" placeholder="Informacion General" required></br>
+                    <label>Descripcion:</label><br>
+                    <textarea name="${tableId}_description" rows="4" cols="50" placeholder=" Usa esta opción para preguntas sobre teléfonos de contacto, dirección de la empresa, páginas web, y tipos de servicios " required></textarea><br>
                     <div id="${tableId}_columns">
                         <!-- Columns will be added here -->
                     </div>

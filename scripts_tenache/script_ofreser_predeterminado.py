@@ -45,7 +45,7 @@ def ai_respond(
         TABLE = "messages",
         model_folder= "/home/tenache/whatsappBot2/scripts_tenache/models",
         model_name = 'vicuna-13b-v1.5.gguf',
-        info_data_name = 'info_ofreser_fict2.db',
+        info_data_name = 'ofreser.db',
         config_folder = "/home/tenache/whatsappBot2/scripts_tenache",
         config_name = "ofreser_config.yaml",
         key_strings_keys = ['Lamentablemente, no dispongo de toda la información necesaria para ayudarlo directamente.',
