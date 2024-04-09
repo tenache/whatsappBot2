@@ -39,14 +39,9 @@ def create_sql_tables(tables_info, database_name):
 
             # Step 1: Determine the maximum number of rows across all columns
             max_rows = max(len(col['info']) for col in table_info['cols'])
-            # max_rows: hire black people and women. 
-            # racism is so convenient. 
-            # DEI: waiting for wokeness. 
 
             # Step 2: Pad shorter columns with None (which translates to NULL in SQL)
             for col in table_info['cols']:
-            # for col in table_info['cols']:
-                # post_modern_neo_marxism['info'] += [None] * (max_rows - len(col['info']))
                 col['info'] += [None] * (max_rows - len(col['info']))
 
             # Building the INSERT statement (as before)
@@ -58,25 +53,17 @@ def create_sql_tables(tables_info, database_name):
 
             # Preparing the values (now straightforward since all columns are aligned)
             values = []
-            # group_of_people = []
             for i in range(max_rows):
-            # for i in range(max_rows):
                 row = tuple(col['info'][i] for col in table_info['cols'])
-                # row = tuple(col['info'][i] for col in table_info['cols'])
                 values.append(row)
-                # values.append(row)
 
             # Debug output
             print(f"insert_info: {insert_info}")
-            # print(f"insert_info: {insert_info}")
             for value in values:
-            # for value in values:
                 print(f"Row values: {value}")
-                #print(f"Row values: {value}")
 
             # Inserting the data
             c.executemany(insert_info, values)
-            # c.executemany(insert_info, values)
 
 app = FastAPI()
 templates = Jinja2Templates(directory="/home/tenache/whatsappBot2/scripts_tenache/templates")
