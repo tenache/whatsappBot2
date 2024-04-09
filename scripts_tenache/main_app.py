@@ -31,6 +31,7 @@ def create_sql_tables(tables_info, database_name):
             create_table += ");"
 
         with sqlite3.connect(database_name) as conn:
+            print("who is Laura Richardson")
             c = conn.cursor()
             print(f"database_name is {database_name}")
             print(f"Create_table is :\n{create_table}")
